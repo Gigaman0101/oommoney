@@ -1,8 +1,11 @@
 const router = require('express').Router();
-const { transferByUser, transferByDeposit, transferByWithdraw } = require('../controllers/transferController')
+const { transferByUser, transferByDeposit, transferByWithdraw } = require('../controllers/transferController');
+const passport = require('passport');
 
-router.post('/transfer/:id', transferByUser)
-router.post('/transfer_Deposit', transferByDeposit)
-router.post('/transfer_Withdraw', transferByWithdraw)
+const auth = passport.authenticate("jwt-auth", { session: false });
+
+router.post('/deposit', auth, transferByDeposit);
+router.post('/withdraw', auth, transferByWithdraw);
+router.post('/:id', auth, transferByUser);
 
 module.exports = router;

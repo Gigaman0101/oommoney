@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         amount: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
         },
         type_bag: {
             type: DataTypes.STRING,

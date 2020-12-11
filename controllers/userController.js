@@ -29,6 +29,7 @@ const register = async (req, res) => {
             sub_district,
             postal_code
         } = req.body;
+        
         const targetUser = await db.User.findOne({ where: { username } });
 
         if (targetUser) {
@@ -118,9 +119,10 @@ const login = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         const allUsers = await db.User.findAll({
-            include: {
-                model: db.Address
-            }
+            include: [
+                { model: db.Address },
+                { model: db.Bag }
+            ]
         });
         res.status(200).send(allUsers)
     } catch (err) {
@@ -141,7 +143,10 @@ const updateImageUser = async (req, res) => {
 
                 await targetUser.update({
                     profile_url: result.secure_url
-                })
+                });
+
+                // targetUser.profile_url = result.secure_url
+                // targetUser.save();
 
                 fs.unlinkSync(file.path);
                 res.status(200).send({ message: `update image user: ${targetUser.id} success` })
