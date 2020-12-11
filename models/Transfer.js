@@ -17,5 +17,5 @@ module.exports = (sequelize, DataTypes) => {
         Transfer.belongsTo(models.User, { foreignKey: "transfer_to" })
     }
 
-    return Transfer
+    return Transfer;
 }

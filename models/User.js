@@ -49,6 +49,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         career: {
             type: DataTypes.STRING
+        },
+        profile_url: {
+            type: DataTypes.STRING
         }
     }, {
         tableName: "users",
@@ -57,8 +60,8 @@ module.exports = (sequelize, DataTypes) => {
     User.associate = models => {
         User.hasMany(models.Address, { foreignKey: "user_id" });
         User.hasMany(models.Bag, { foreignKey: "user_id" });
-        User.hasMany(models.Bag, { foreignKey: "transfer_by" });
-        User.hasMany(models.Bag, { foreignKey: "transfer_to" });
+        User.hasMany(models.Transfer, { foreignKey: "transfer_by" });
+        User.hasMany(models.Transfer, { foreignKey: "transfer_to" });
     };
 
     return User

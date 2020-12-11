@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { createAddress } = require('../controllers/address');
+const { createAddress } = require('../controllers/addressController');
 
 router.post('/', createAddress);
 
