@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const passport = require('passport');
-const { createBag } = require('../controllers/bagController');
+const { createGrowBag } = require('../controllers/bagController');
 
 const auth = passport.authenticate("jwt-auth", { session: false });
 
-router.post('/', auth, createBag);
+router.post('/', auth, createGrowBag);
 
 module.exports = router;

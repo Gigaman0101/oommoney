@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Bag.associate = models => {
-        Bag.belongsTo(models.User, { foreignKey: "user_id" })
+        Bag.belongsTo(models.User, { foreignKey: "user_id" });
+        Bag.hasMany(models.Has, { foreignKey: "bag_id" })
     };
 
     return Bag
