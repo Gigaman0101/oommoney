@@ -10,7 +10,8 @@ const userRoutes = require('./routes/user');
 const addressRoutes = require('./routes/address');
 const transferRoutes = require('./routes/transfer');
 const bagRoutes = require('./routes/bag');
-const conditionRoutes = require('./routes/condition')
+const conditionRoutes = require('./routes/condition');
+const hasRoutes = require('./routes/has');
 
 app.use(cors());
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use("/address", addressRoutes);
 app.use("/transfer", transferRoutes);
 app.use("/bags", bagRoutes);
 app.use("/conditions", conditionRoutes);
+app.use("/has", hasRoutes);
 
 app.use((err, req, res, next) => {
     console.log(err);

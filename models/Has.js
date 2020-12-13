@@ -1,5 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-    const Has = sequelize.define("Has", {}, {
+    const Has = sequelize.define("Has", {
+        status: {
+            type: DataTypes.STRING
+        }
+    }, {
         tableName: "has"
     });
 
