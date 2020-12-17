@@ -102,10 +102,22 @@ const getMyFunBag = async (req, res) => {
     };
 };
 
+const getAllBags = async (req, res) => {
+    try {
+        const allBags = await db.Bag.findAll({ where: { user_id: req.user.id } });
+
+        res.status(200).send(allBags);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message });
+    }
+}
+
 module.exports = {
     createGrowBag,
     createFunBag,
     getMyGrowBag,
     getMyMoneyBag,
-    getMyFunBag
+    getMyFunBag,
+    getAllBags
 }

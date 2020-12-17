@@ -6,6 +6,7 @@ const fs = require('fs');
 
 const register = async (req, res) => {
     try {
+        console.log(req.file);
         const {
             username,
             password,
@@ -29,7 +30,7 @@ const register = async (req, res) => {
             sub_district,
             postal_code
         } = req.body;
-        
+
         const targetUser = await db.User.findOne({ where: { username } });
 
         if (targetUser) {
@@ -88,6 +89,7 @@ const register = async (req, res) => {
 
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ message: err.message })
     }
 };
@@ -103,7 +105,18 @@ const login = async (req, res) => {
             const isCorrect = bcryptjs.compareSync(password, targetUser.password);
             if (isCorrect) {
                 const payload = {
-                    id: targetUser.id
+                    id: targetUser.id,
+                    username: targetUser.username,
+                    firstName: targetUser.firstName,
+                    lastName: targetUser.lastName,
+                    email: targetUser.email,
+                    phone_number: targetUser.phone_number,
+                    status: targetUser.status,
+                    id_card: targetUser.id_card,
+                    education_level: targetUser.education_level,
+                    price_range: targetUser.price_range,
+                    career: targetUser.career,
+                    profile_url: targetUser.profile_url
                 };
                 const token = jwt.sign(payload, process.env.SECRET, { expiresIn: 3600 })
                 res.status(200).send({ token })
