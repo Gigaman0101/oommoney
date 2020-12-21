@@ -1,30 +1,13 @@
 const db = require('../models');
 const { Op } = require('sequelize')
 
-const createGrowBag = async (req, res) => {
+const createGrowFunBag = async (req, res) => {
     try {
-        const { name_bag, amount } = req.body;
+        const { name_bag, amount, type_bag } = req.body;
         const newBag = await db.Bag.create({
             name_bag,
             amount,
-            type_bag: "GROW BAG",
-            user_id: req.user.id
-        });
-
-        res.status(201).send(newBag);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send({ message: err.message });
-    };
-};
-
-const createFunBag = async (req, res) => {
-    try {
-        const { name_bag, amount } = req.body;
-        const newBag = await db.Bag.create({
-            name_bag,
-            amount,
-            type_bag: "FUN BAG",
+            type_bag,// "FUN BAG" "GROW BAG" ก็ได้
             user_id: req.user.id
         });
 
@@ -49,7 +32,7 @@ const getMyGrowBag = async (req, res) => {
         if (targetBag) {
             res.status(200).send(targetBag);
         } else {
-            res.status(400).send({ message: "คุณยังไม่ได้สร้าง GROW BAG" })
+            res.status(200).send({ message: "คุณยังไม่ได้สร้าง GROW BAG", status: false })
         }
 
     } catch (err) {
@@ -94,7 +77,7 @@ const getMyFunBag = async (req, res) => {
         if (targetBag) {
             res.status(200).send(targetBag);
         } else {
-            res.status(400).send({ message: "คุณยังไม่ได้สร้าง FUN BAG" })
+            res.status(200).send({ message: "คุณยังไม่ได้สร้าง FUN BAG", status: false })
         };
 
     } catch (err) {
@@ -114,8 +97,7 @@ const getAllBags = async (req, res) => {
 }
 
 module.exports = {
-    createGrowBag,
-    createFunBag,
+    createGrowFunBag,
     getMyGrowBag,
     getMyMoneyBag,
     getMyFunBag,

@@ -168,11 +168,21 @@ const updateImageUser = async (req, res) => {
     } catch (err) {
         res.status(500).send({ message: err.message });
     }
-}
+};
+
+const getUserById = async (req, res) => {
+    try {
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    }
+};
 
 module.exports = {
     register,
     login,
     getAllUser,
+    getUserById,
     updateImageUser
 }

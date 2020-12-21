@@ -3,13 +3,12 @@ const { Op } = require('sequelize')
 
 const transferByUser = async (req, res) => {
     try {
-        const { amountPlus } = req.body;
-        const { id } = req.params;
-        const targetTransferTo = await db.User.findOne({ where: { id } });
+        const { amountPlus, firstName } = req.body;
+        const targetTransferTo = await db.User.findOne({ where: { firstName } });
         const BagTransferTo = await db.Bag.findOne({
             where: {
                 [Op.and]: [
-                    { user_id: id },
+                    { user_id: targetTransferTo.id },
                     { type_bag: "MONEY BAG" }
                 ]
             }
@@ -36,6 +35,10 @@ const transferByUser = async (req, res) => {
 
                 await BagTransferTo.update({
                     amount: +amountPlus + +BagTransferTo.amount
+                });
+
+                await BagTransferBy.update({
+                    amount: +BagTransferBy.amount - +amountPlus
                 });
 
                 res.status(201).send(newTransfer);
@@ -210,10 +213,60 @@ const getAllHistoryByUser = async (req, res) => {
     };
 };
 
+const transferByInside = async (req, res) => {
+    try {
+        const { amountPlus, type_bagBy, type_bagTo } = req.body;
+        const targetTransferTo = await db.User.findOne({ where: { id: req.user.id } }); // หาตัวเองเพราะส่งแค่ภายใน
+        const BagTransferTo = await db.Bag.findOne({
+            where: {
+                user_id: targetTransferTo.id,
+                type_bag: type_bagTo
+            }
+        });
+        const BagTransferBy = await db.Bag.findOne({
+            where: {
+                user_id: req.user.id,
+                type_bag: type_bagBy
+            }
+        });
+
+        console.log(targetTransferTo);
+
+        if (BagTransferBy.amount >= amountPlus) {
+            if (targetTransferTo) {
+                const newTransfer = await db.Transfer.create({
+                    amount: amountPlus,
+                    type_transfer: "โอน",
+                    transfer_to: targetTransferTo.id,
+                    transfer_by: req.user.id
+                });
+
+                await BagTransferTo.update({
+                    amount: +amountPlus + +BagTransferTo.amount
+                });
+
+                await BagTransferBy.update({
+                    amount: +BagTransferBy.amount - +amountPlus
+                });
+
+                res.status(201).send(newTransfer);
+            } else {
+                res.status(400).send({ message: "ไม่พบ user นี้" });
+            };
+        } else {
+            res.status(400).send({ message: "คุณมีเงินไม่พอสำหรับการ 'โอน'" });
+        };
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    }
+};
+
 module.exports = {
     transferByUser,
     transferByDeposit,
     transferByWithdraw,
+    transferByInside,
     getAllTransByUser,
     getAllDepositByUser,
     getAllWithdrawByUser,

@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const passport = require('passport');
-const { createGrowBag, getMyMoneyBag, getMyFunBag, getMyGrowBag, getAllBags } = require('../controllers/bagController');
+const { getMyMoneyBag, getMyFunBag, getMyGrowBag, getAllBags, createGrowFunBag } = require('../controllers/bagController');
 
 const auth = passport.authenticate("jwt-auth", { session: false });
 
-router.post('/', auth, createGrowBag);
+router.post('/grow_fun', auth, createGrowFunBag)
 router.get('/', auth, getAllBags);
 router.get('/money', auth, getMyMoneyBag);
 router.get('/fun', auth, getMyFunBag);
