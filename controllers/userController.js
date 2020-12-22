@@ -116,7 +116,8 @@ const login = async (req, res) => {
                     education_level: targetUser.education_level,
                     price_range: targetUser.price_range,
                     career: targetUser.career,
-                    profile_url: targetUser.profile_url
+                    profile_url: targetUser.profile_url,
+                    expire: new Date().getTime() + 3600000
                 };
                 const token = jwt.sign(payload, process.env.SECRET, { expiresIn: 3600 })
                 res.status(200).send({ token })
@@ -125,6 +126,7 @@ const login = async (req, res) => {
             }
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ message: err.message })
     }
 };
@@ -166,8 +168,9 @@ const updateImageUser = async (req, res) => {
             })
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send({ message: err.message });
-    }
+    };
 };
 
 const getUserById = async (req, res) => {

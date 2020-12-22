@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Has.associate = models => {
         Has.belongsTo(models.Bag, { foreignKey: "bag_id" });
-        Has.belongsTo(models.Bag, { foreignKey: "condition_id" });
+        Has.belongsTo(models.ConditionBag, { foreignKey: "condition_id" });
     };
 
     return Has;

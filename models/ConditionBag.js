@@ -11,7 +11,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Condition.associate = models => {
-        Condition.hasMany(models.Has, { foreignKey: "condition_id" })
+        Condition.hasMany(models.Has, { foreignKey: "condition_id" });
+        Condition.belongsTo(models.User, { foreignKey: "user_id" });
     };
 
     return Condition;
