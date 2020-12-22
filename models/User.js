@@ -60,7 +60,9 @@ module.exports = (sequelize, DataTypes) => {
     User.associate = models => {
         User.hasMany(models.Address, { foreignKey: "user_id" });
         User.hasMany(models.Bag, { foreignKey: "user_id" });
+       
         User.hasMany(models.Transfer, { foreignKey: "transfer_by" });
+        
         User.hasMany(models.Transfer, { foreignKey: "transfer_to" });
     };
 

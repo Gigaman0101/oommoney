@@ -13,9 +13,14 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     Transfer.associate = models => {
-        Transfer.belongsTo(models.User, { foreignKey: "transfer_by" })
-        Transfer.belongsTo(models.User, { foreignKey: "transfer_to" })
-    }
+        Transfer.belongsTo(models.User, { foreignKey: "transfer_by" });
+       
+        Transfer.belongsTo(models.User, { foreignKey: "transfer_to" });
+       
+        Transfer.belongsTo(models.Bag, { foreignKey: "bag_by" });
+        
+        Transfer.belongsTo(models.Bag, { foreignKey: "bag_to" });
+    };
 
     return Transfer;
-}
+};

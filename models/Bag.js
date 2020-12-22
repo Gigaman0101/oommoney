@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     Bag.associate = models => {
         Bag.belongsTo(models.User, { foreignKey: "user_id" });
         Bag.hasMany(models.Has, { foreignKey: "bag_id" })
+
+        Bag.hasMany(models.Transfer, { foreignKey: "bag_by" });
+
+        Bag.hasMany(models.Transfer, { foreignKey: "bag_to" });
     };
 
     return Bag

@@ -93,13 +93,27 @@ const getAllBags = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).send({ message: err.message });
-    }
-}
+    };
+};
+
+const getAllMoney = async (req, res) => {
+    try {
+        const allBags = await db.Bag.findAll({ where: { user_id: req.user.id } });
+        let ans = 0;
+        allBags.forEach(item => ans += Number(item.amount));
+        // res.status(200).send({ message: ans });
+        res.status(200).send(String(ans));
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    };
+};
 
 module.exports = {
     createGrowFunBag,
     getMyGrowBag,
     getMyMoneyBag,
     getMyFunBag,
-    getAllBags
+    getAllBags,
+    getAllMoney
 }

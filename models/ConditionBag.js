@@ -2,6 +2,9 @@ module.exports = (sequelize, DataTypes) => {
     const Condition = sequelize.define("ConditionBag", {
         condition_name: {
             type: DataTypes.STRING
+        },
+        condition_amount: {
+            type: DataTypes.STRING
         }
     }, {
         tableName: "conditionBags"
