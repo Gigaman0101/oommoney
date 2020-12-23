@@ -59,48 +59,71 @@ const selectCondition = async (req, res) => {
 
 const disableCondition = async (req, res) => {
     try {
-        const { id } = req.body;
-        const targetUser = await db.User.findOne({ where: { id: req.user.id } });
-
-        if (targetUser) {
-            const targetBag = await db.Bag.findOne({
-                where: {
-                    user_id: targetUser.id
-                }
-            });
-            if (targetBag) {
-                const targetSelect = await db.Has.findOne({
-                    where: { id },
-                    include: {
-                        model: db.ConditionBag
-                    }
-                });
-
-                if (targetSelect) {
-                    await targetSelect.destroy();
-
-                    res.status(200).send({ message: `ปิด เงื่อนไข ${targetSelect.ConditionBag.condition_name} และ ลบสำเร็จ` });
-                } else {
-                    res.status(400).send({ message: "ไม่พบการ match นี้" })
-                }
-            } else {
-                res.status(400).send({ message: "ไม่พบกระเป๋านี้" });
+        const { id } = req.params;
+        const targetSelect = await db.Has.findOne({
+            where: { id: id },
+            include: {
+                model: db.ConditionBag
             }
-        } else {
-            res.status(400).send({ message: "ยังไม่ได้ล็อคอิน" });
-        };
+        });
+        console.log('targetSelect: ', targetSelect);
+        await targetSelect.destroy();
+
+        res.status(200).send({ message: `ลบสำเร็จ` });
+
     } catch (err) {
         console.log(err);
         res.status(500).send({ message: err.message });
     };
 };
 
-const getAllSelectByUser = async (req, res) => {
+const getAllSelectByMoney = async (req, res) => {
     try {
         const targetUser = await db.User.findOne({ where: { id: req.user.id } });
         if (targetUser) {
-            const { type_bag } = req.body;
-            const targetBag = await db.Bag.findOne({ where: { user_id: targetUser.id, type_bag } })
+            const targetBag = await db.Bag.findOne({ where: { user_id: targetUser.id, type_bag: "MONEY BAG" } })
+            if (targetBag) {
+                const targetSelect = await db.Has.findAll({ where: { bag_id: targetBag.id }, include: { model: db.ConditionBag } });
+
+                res.status(200).send(targetSelect);
+            } else {
+                res.status(400).send({ message: "คุณยังไม่ได้สร้างกระเป๋านี้" });
+            }
+        } else {
+            res.status(400).send({ message: "คุณยังไม่ได้ล็อคอิน" })
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    }
+};
+
+const getAllSelectByGrow = async (req, res) => {
+    try {
+        const targetUser = await db.User.findOne({ where: { id: req.user.id } });
+        if (targetUser) {
+            const targetBag = await db.Bag.findOne({ where: { user_id: targetUser.id, type_bag: "GROW BAG" } })
+            if (targetBag) {
+                const targetSelect = await db.Has.findAll({ where: { bag_id: targetBag.id }, include: { model: db.ConditionBag } });
+
+                res.status(200).send(targetSelect);
+            } else {
+                res.status(400).send({ message: "คุณยังไม่ได้สร้างกระเป๋านี้" });
+            }
+        } else {
+            res.status(400).send({ message: "คุณยังไม่ได้ล็อคอิน" })
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    }
+};
+
+const getAllSelectByFun = async (req, res) => {
+    try {
+        const targetUser = await db.User.findOne({ where: { id: req.user.id } });
+        if (targetUser) {
+            const targetBag = await db.Bag.findOne({ where: { user_id: targetUser.id, type_bag: "FUN BAG" } })
             if (targetBag) {
                 const targetSelect = await db.Has.findAll({ where: { bag_id: targetBag.id }, include: { model: db.ConditionBag } });
 
@@ -120,5 +143,7 @@ const getAllSelectByUser = async (req, res) => {
 module.exports = {
     selectCondition,
     disableCondition,
-    getAllSelectByUser
+    getAllSelectByMoney,
+    getAllSelectByGrow,
+    getAllSelectByFun
 }

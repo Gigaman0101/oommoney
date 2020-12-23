@@ -22,7 +22,7 @@ const transferByUser = async (req, res) => {
             }
         });
 
-        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ฝาก" } });
+        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่โอน", user_id: req.user.id } });
 
         const targetSelect = await db.Has.findOne({
             where: { condition_id: targetCondition.id },
@@ -30,7 +30,7 @@ const transferByUser = async (req, res) => {
                 { model: db.ConditionBag }
             ]
         });
-        console.log(targetTransferTo);
+        console.log('targetTransferTo: ', targetTransferTo);
 
         const conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
@@ -39,9 +39,14 @@ const transferByUser = async (req, res) => {
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         if (targetTransferTo) {
             if (BagTransferBy) {
+                console.log("COME IN BagTransferBy");
                 if (BagTransferBy.amount >= amountPlus) {
+                    console.log("COME IN BagTransferBy.amount >= amountPlus");
                     if (targetSelect) {
-                        if (Number(BagTransferBy.amount) >= amountTransfer) {
+                        console.log("COME IN targetSelect")
+                        if (Number(BagTransferBy.amount) >= Number(amountTransfer)) {
+                            console.log("COME IN Number(BagTransferBy.amount) >= amountTransfer")
+
                             await BagTransferTo.update({
                                 amount: Number(amountPlus) + Number(BagTransferTo.amount)
                             });
@@ -75,6 +80,10 @@ const transferByUser = async (req, res) => {
 
                             res.status(201).send({ newTransfer, newConditionTransfer });
                         } else {
+                            console.log("Fail");
+                            console.log("BagTransferBy.amount: ", BagTransferBy.amount);
+                            console.log("amountTransfer: ", amountTransfer);
+                            console.log("targetCondition.condition_amount: ", targetCondition.condition_amount);
                             res.status(400).send({ message: "เงินในกระเป๋าของคุณไม่พอเมื่อโอนแบบใช้เงื่อนไข" })
                         };
                     } else {
@@ -125,10 +134,11 @@ const transferByDeposit = async (req, res) => {
             }
         });
 
-        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ฝาก" } });
-
+        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ฝาก", user_id: req.user.id } });
         const targetSelect = await db.Has.findOne({
-            where: { condition_id: targetCondition.id },
+            where: {
+                condition_id: targetCondition.id,
+            },
             include: [
                 { model: db.ConditionBag }
             ]
@@ -139,16 +149,11 @@ const transferByDeposit = async (req, res) => {
         let amountDeposit = Number(amountPlus) - Number(targetCondition.condition_amount);
 
         if (myBag) {
-
+            console.log("COME IN MY BAG")
             //กรณีมีเงื่อนไข การเก็บเงิน
             if (targetSelect) {
-
-                if (amountPlus < targetCondition.condition_amount) {
-                    res.status(400).send({ message: "ไม่สามารถใช้เงื่อนไขนี้ได้เนื่องจากคุณกรอกจำนวนเงินที่ฝากน้อยกว่า จำนวนเงินในเงื่อนไข" })
-                } else {
-
-                    console.log(conditionBag, 'conditionBag');
-
+                console.log("COME IN TARGET_SELECT");
+                if (Number(amountPlus) > Number(targetCondition.condition_amount)) {
                     await myBag.update({
                         amount: +amountDeposit + +myBag.amount
                     });
@@ -176,6 +181,11 @@ const transferByDeposit = async (req, res) => {
                     });
 
                     res.status(200).send({ newDeposit, newConditionDeposit });
+                } else {
+                    console.log("COME IN FAIL")
+                    console.log("amountPlus: ", amountPlus);
+                    console.log("targetCondition.condition_amount: ", targetCondition.condition_amount);
+                    res.status(400).send({ message: "ไม่สามารถใช้เงื่อนไขนี้ได้เนื่องจากคุณกรอกจำนวนเงินที่ฝากน้อยกว่า จำนวนเงินในเงื่อนไข" })
                 };
 
             } else {
@@ -191,13 +201,11 @@ const transferByDeposit = async (req, res) => {
                     amount: +amountPlus + +myBag.amount
                 });
                 res.status(200).send(newDeposit);
-            }
+            };
 
         } else {
             res.status(400).send({ message: "กรุณาสร้างกระเป๋านี้ก่อน" });
         };
-
-        res.status(201).send(newDeposit);
 
     } catch (err) {
         console.log(err);
@@ -217,7 +225,7 @@ const transferByWithdraw = async (req, res) => {
             }
         });
 
-        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ถอน" } });
+        const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ถอน", user_id: req.user.id } });
 
         const targetSelect = await db.Has.findOne({
             where: { condition_id: targetCondition.id },

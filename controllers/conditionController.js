@@ -46,8 +46,21 @@ const getAllConditionByUser = async (req, res) => {
     };
 };
 
+const getConditionByName = async (req, res) => {
+    try {
+        const { condition_name } = req.body;
+        const condition = await db.ConditionBag.findOne({ user_id: req.user.id, condition_name })
+
+        res.status(200).send(condition);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send({ message: err.message })
+    }
+}
+
 module.exports = {
     createCondition,
     getAllCondition,
-    getAllConditionByUser
+    getAllConditionByUser,
+    getConditionByName
 };
