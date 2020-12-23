@@ -108,6 +108,7 @@ const getAllSelectByGrow = async (req, res) => {
 
                 res.status(200).send(targetSelect);
             } else {
+                console.log("Fail")
                 res.status(400).send({ message: "คุณยังไม่ได้สร้างกระเป๋านี้" });
             }
         } else {

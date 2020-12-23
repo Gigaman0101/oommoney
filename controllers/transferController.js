@@ -22,19 +22,27 @@ const transferByUser = async (req, res) => {
             }
         });
 
+        let targetSelect = null;
+        let conditionBag = null;
+        let amountTransfer = null;
         const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่โอน", user_id: req.user.id } });
+        if (targetCondition) {
+            targetSelect = await db.Has.findOne({
+                where: { condition_id: targetCondition.id },
+                include: [
+                    { model: db.ConditionBag }
+                ]
+            });
+            if (targetSelect) {
+                conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
-        const targetSelect = await db.Has.findOne({
-            where: { condition_id: targetCondition.id },
-            include: [
-                { model: db.ConditionBag }
-            ]
-        });
+                amountTransfer = Number(amountPlus) + Number(targetCondition.condition_amount);
+            };
+        };
+
         console.log('targetTransferTo: ', targetTransferTo);
 
-        const conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
-        let amountTransfer = Number(amountPlus) + Number(targetCondition.condition_amount);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////
         if (targetTransferTo) {
@@ -134,22 +142,29 @@ const transferByDeposit = async (req, res) => {
             }
         });
 
+        let targetSelect = null;
+        let conditionBag = null;
+        let amountDeposit = null;
         const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ฝาก", user_id: req.user.id } });
-        const targetSelect = await db.Has.findOne({
-            where: {
-                condition_id: targetCondition.id,
-            },
-            include: [
-                { model: db.ConditionBag }
-            ]
-        });
+        if (targetCondition) {
+            targetSelect = await db.Has.findOne({
+                where: {
+                    condition_id: targetCondition.id,
+                },
+                include: [
+                    { model: db.ConditionBag }
+                ]
+            });
+            if (targetSelect) {
+                conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
+                amountDeposit = Number(amountPlus) - Number(targetCondition.condition_amount);
+            }
+        };
 
-        const conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
-        let amountDeposit = Number(amountPlus) - Number(targetCondition.condition_amount);
 
         if (myBag) {
-            console.log("COME IN MY BAG")
+            console.log("COME IN MY BAG");
             //กรณีมีเงื่อนไข การเก็บเงิน
             if (targetSelect) {
                 console.log("COME IN TARGET_SELECT");
@@ -189,6 +204,7 @@ const transferByDeposit = async (req, res) => {
                 };
 
             } else {
+                console.log("COME IN NOSELECT")
                 const newDeposit = await db.Transfer.create({
                     amount: amountPlus,
                     type_transfer: "ฝาก",
@@ -225,18 +241,26 @@ const transferByWithdraw = async (req, res) => {
             }
         });
 
+        let targetSelect;
+        let conditionBag;
+        let amountWithdraw;
         const targetCondition = await db.ConditionBag.findOne({ where: { condition_name: "เก็บทุกครั้งที่ถอน", user_id: req.user.id } });
+        if (targetCondition) {
+            targetSelect = await db.Has.findOne({
+                where: { condition_id: targetCondition.id },
+                include: [
+                    { model: db.ConditionBag }
+                ]
+            });
+            if (targetSelect) {
+                conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
-        const targetSelect = await db.Has.findOne({
-            where: { condition_id: targetCondition.id },
-            include: [
-                { model: db.ConditionBag }
-            ]
-        });
+                amountWithdraw = Number(amountMinus) + Number(targetCondition.condition_amount);
+            }
+        }
 
-        const conditionBag = await db.Bag.findOne({ where: { id: targetSelect.bag_id } });
 
-        let amountWithdraw = Number(amountMinus) + Number(targetCondition.condition_amount);
+
 
         if (myBag) {
             if (Number(myBag.amount) >= amountMinus) {
